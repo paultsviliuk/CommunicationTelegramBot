@@ -10,26 +10,52 @@ questions=Questions.objects
 def executeCommands(text,user):
         if text=='/start':
             startMethod(user=user)
+            return
         if text=='Задать вопрос':
             questionMethod(user=user)
+            return
+        if text[0]=='?' and text[-1]=='?' and text.find('id='):
+            text=text.split(',')
+            question=text[0][1:]
+            id=text[1][3:-1]
+            changeQuestion(id=id,text=question,user=user)
+            return
         if text[0]=='?' and text[-1]=='?':
             confirmQuation(text=text,user=user)
+            return
         if text[0:2]=='да':
             id=text[15:][:-1]
             confirmUsingReputation(id=id,user=user)
+            return
         if text=='нет':
             questionMessage(user=user)
+            return
         if text.find('!r=')>=0 and text.find(',id=')>=0 and text[-1]=='!':
             text=text.split(',')
             reputation=int(text[0][3:])
             id=text[1][3:][:-1]
             setReputationToQuestion(id=id,reputation=reputation,user=user)
+            return
         if text=='Профиль':
             profileMethod(user=user)
+            return
         if text=='Список вопросов':
             getQuestionList(user=user)
-        if text=='на начало':
+            return
+        if text=='На начало':
             startMethod(user=user)
+            return
+        if text.find('repchange')>=0:
+            id=text[13:]
+            confirmUsingReputation(id=id,user=user)
+            return
+        if text.find('qchange')>=0:
+            id=text[11:]
+            changeQuestionMessage(id=id,user=user)
+            return
+
+
+
 
 def startMethod(user):
     id=user['id']
@@ -65,9 +91,22 @@ def profileMethod(user):
     }
     API.sendMessage(user=user, message=message, reply_markup=keyboard)
 
+
 def changeQuestion(id,text,user):
+    u=users.get(id=user['id'])
+    q=questions.filter(id=id,user=u)
+    if q.count()>0:
+        q[0].question=text
+        q[0].save()
+        message='Вопрос отредактирован'
+    else:
+        message='Вопроса с таким id у вас нет'
+    API.sendMessage(user=user, message=message)
 
-
+def changeQuestionMessage(id,user):
+    message = 'Id вопроса : '+str(id)+'\n' \
+              'Введите ваш вопрос таким образом.\n?[ваш вопрос],id=[id вопроса]?'
+    API.sendMessage(user=user, message=message)
 
 def questionMethod(user):
     message = 'Введите ваш вопрос таким образом.\n?[ваш вопрос]?'
@@ -100,6 +139,7 @@ def confirmUsingReputation(id,user):
         ' !r=[количество репутации],id=[id вопроса]!'
     API.sendMessage(user=user, message=message)
 
+
 def setReputationToQuestion(id,reputation,user):
     u=users.get(id=user['id'])
     question=questions.filter(id=id,user=u)
@@ -120,18 +160,22 @@ def setReputationToQuestion(id,reputation,user):
 
 def getQuestionList(user):
     u=users.get(id=user['id'])
-    message='\n\n'
     for q in questions.filter(user=u) :
-        q='Вопрос : '+ q.question+'\n' \
-        'Репутация : ' + str(q.reputation) + '\n' \
-        'id Вопроса : ' + str(q.id) + '\n\n\n'
-        message+=q
-    API.sendMessage(user=user, message=message)
+        message ='Вопрос : '+ q.question
+        message += '\nРепутация вопроса : ' + str(q.reputation)
+        keyboard={
+        'inline_keyboard': [
+            [{'text':'Редактировать вопрос' ,'callback_data':'qchange,id='+str(q.id)}],
+            [{'text': 'Изменить репутацию', 'callback_data': 'repchange,id='+str(q.id)}]
+        ],
+        'one_time_keyboard': True
+        }
+
+        API.sendMessage(user=user, message=message,reply_markup=keyboard)
 
 def executeBot(request):
-    update = API.getUpdates()
-    message = update['message']
-    user = message['from']
-    executeCommands(text=message['text'], user=user)
+    commands,user = API.getUpdates()
+    print(commands)
+    executeCommands(text=commands, user=user)
     return HttpResponse("Ok")
 

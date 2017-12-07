@@ -15,6 +15,7 @@ def sendMessage(user,message,reply_markup=None):
     method_name='sendMessage'
     if reply_markup!=None:
         dic={
+            'parse_mode':'Markdown',
             'chat_id':user['id'],
             'text':message,
             'reply_markup':json.dumps(reply_markup),
@@ -30,7 +31,13 @@ def getUpdates():
     method_name='getUpdates'
     r = requests.get(TELEGRAM_API_URL + method_name)
     update=json.loads(r.text)['result']
-    return update[len(update)-1]
+    update=update[len(update)-1]
 
+    if update.get('message')!=None:
+        return update['message']['text'],update['message']['from']
+    if update.get('callback_query')!=None:
+        return update['callback_query']['data'], update['callback_query']['from']
+
+    return 0,0
 
 
