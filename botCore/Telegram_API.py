@@ -11,17 +11,17 @@ def setWebhook():
     }
     requests.post(TELEGRAM_API_URL + method_name, data=dic)
 
-def sendMessage(chat,message,reply_markup=None):
+def sendMessage(user,message,reply_markup=None):
     method_name='sendMessage'
     if reply_markup!=None:
         dic={
-            'chat_id':chat['id'],
+            'chat_id':user['id'],
             'text':message,
             'reply_markup':json.dumps(reply_markup),
         }
     else:
         dic = {
-            'chat_id': chat['id'],
+            'chat_id': user['id'],
             'text': message,
         }
     requests.post(TELEGRAM_API_URL + method_name,data=dic)
