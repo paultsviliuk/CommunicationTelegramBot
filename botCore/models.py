@@ -10,6 +10,9 @@ class User(models.Model):
     def __str__(self):
         return "id: " + str(self.id)+" name: "+self.name +" reputation: "+str(self.reputation)
 
+    class Meta:
+        db_table='users'
+
 class Questions(models.Model):
     question=models.CharField(max_length=150)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
@@ -17,3 +20,6 @@ class Questions(models.Model):
 
     def __str__(self):
         return "question: "+self.question+" репутация: "+str(self.reputation)
+
+    class Meta:
+        db_table='questions'

@@ -27,17 +27,27 @@ def sendMessage(user,message,reply_markup=None):
         }
     requests.post(TELEGRAM_API_URL + method_name,data=dic)
 
-def getUpdates():
+def getUpdates(offset=None):
     method_name='getUpdates'
-    r = requests.get(TELEGRAM_API_URL + method_name)
-    update=json.loads(r.text)['result']
-    update=update[len(update)-1]
+    dic={
+        'offset':offset
+    }
+    r = requests.post(TELEGRAM_API_URL + method_name,data=dic)
+    commands=[]
+    users=[]
+    updates=json.loads(r.text)['result']
 
-    if update.get('message')!=None:
-        return update['message']['text'],update['message']['from']
-    if update.get('callback_query')!=None:
-        return update['callback_query']['data'], update['callback_query']['from']
+    for update in updates:
+        if update.get('message')!=None:
+             commands.append(update['message']['text'])
+             users.append(update['message']['from'])
+        if update.get('callback_query')!=None:
+            commands.append(update['callback_query']['data'])
+            users.append(update['callback_query']['from'])
 
-    return 0,0
+    if len(updates)!=0:
+        return commands,users,updates[-1]['update_id']
+    else:
+        return [],[],-1
 
 

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 
+os.environ['DJANGO_SETTINGS_MODULE']='TelegramBot.settings'
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,7 +26,9 @@ SECRET_KEY = '))+08-981o=%m(f0%mh8sia_u=e7h2k0&ab%i#t#)@1(+(t^*t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.105','188.115.138.152']
+ALLOWED_HOSTS = ['192.168.1.105','188.115.138.152','127.0.0.1']
+
+DJANGO_SETTINGS_MODULE='TelegramBot.settings'
 
 
 # Application definition
