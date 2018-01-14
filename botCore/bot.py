@@ -1,6 +1,6 @@
 from botCore import Telegram_API as API
 from botCore import question_module as qs,profile_module as pr
-from botCore import ORM_module as ORM
+from botCore import database_module as ORM
 
 
 def executeCommands(db,text, user):
@@ -52,7 +52,8 @@ def executeCommands(db,text, user):
 
 def startMethod(db,user):
     id=user['id']
-    if len(db.getUser(id))==0:
+    if db.getUser(id)==None:
+        print("OK")
         name=user['first_name']
         reputation=0
         db.setUser(id=id,name=name,reputation=reputation)
@@ -79,6 +80,5 @@ def runBot():
             executeCommands(db=db,text=commands[i], user=users[i])
         offset=int(offset)
         offset += 1
-
 
 runBot()

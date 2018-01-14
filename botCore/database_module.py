@@ -15,7 +15,11 @@ class DataBase:
             'WHERE id=%d' % id
 
         self.cursor.execute(request)
-        return self.cursor.fetchall()[0]
+        user=self.cursor.fetchall()
+        if len(user)!=0:
+            return user[0]
+        else:
+            return None
 
     def setUser(self,id,name,reputation):
         request='INSERT INTO users (id , name , reputation) ' \
