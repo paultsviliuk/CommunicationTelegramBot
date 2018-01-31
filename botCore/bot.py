@@ -1,6 +1,6 @@
-from botCore import Telegram_API as API
-from botCore import question_module as qs,profile_module as pr
-from botCore import database_module as ORM
+from TelegramBot.botCore import Telegram_API as API
+from TelegramBot.botCore import question_module as qs,profile_module as pr, about_module as ab, answer_module as an
+from TelegramBot.botCore import database_module as ORM
 
 
 def executeCommands(db,text, user):
@@ -19,6 +19,8 @@ def executeCommands(db,text, user):
     if text[0] == '?' and text[-1] == '?':
         qs.confirmQuestion(db=db,text=text, user=user)
         return
+    if text[0] == '&':
+        an.questionList(db=db,text=text,user=user)
     if text[0:2] == 'да':
         id = text[15:][:-1]
         qs.confirmUsingReputation(db=db,id=id, user=user)
@@ -31,6 +33,21 @@ def executeCommands(db,text, user):
         reputation = int(text[0][3:])
         id = text[1][3:][:-1]
         qs.setReputationToQuestion(db=db,id=id, reputation=reputation, user=user)
+        return
+    if text == 'Ответить на вопрос':
+        an.answerStartMethod(user=user)
+        return
+    if text == 'Показать вопросы':
+        an.answerMethod(db=db, user=user)
+        return
+    if text == 'Найти вопрос':
+        an.findQuestion(user)
+        return
+    if text == 'О программе':
+        ab.aboutMethod(user=user)
+        return
+    if text == 'Поделиться Вконтакте':
+        ab.shareVk(user)
         return
     if text == 'Профиль':
         pr.profileMethod(db=db,user=user)
@@ -80,5 +97,4 @@ def runBot():
             executeCommands(db=db,text=commands[i], user=users[i])
         offset=int(offset)
         offset += 1
-
 runBot()

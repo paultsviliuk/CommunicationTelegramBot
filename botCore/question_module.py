@@ -1,4 +1,4 @@
-from botCore import Telegram_API as API
+from TelegramBot.botCore import Telegram_API as API
 
 
 def changeQuestion(db,id,text,user):

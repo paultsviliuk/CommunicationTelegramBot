@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 class User(models.Model):
@@ -23,3 +24,11 @@ class Questions(models.Model):
 
     class Meta:
         db_table='questions'
+
+
+class Respondent(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question=models.ForeignKey(Questions,on_delete=models.CASCADE)
+
+    class Meta:
+        db_table='respondents'

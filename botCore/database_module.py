@@ -6,7 +6,7 @@ class DataBase:
     con=None
 
     def connect(self):
-        self.conn = sqlite3.connect('/home/alexey/PycharmProjects/TelegramBot/db.sqlite3')
+        self.conn = sqlite3.connect('/Users/Ayma Loud/Desktop/tgbot/TelegramBot/db.sqlite3')
         self.cursor = self.conn.cursor()
 
     def getUser(self,id):
@@ -32,6 +32,21 @@ class DataBase:
             'FROM questions ' \
             'WHERE user_id=%d' % id
         self.cursor.execute(request)
+        return self.cursor.fetchall()
+
+    def getAllQuestions(self, id):
+        request='SELECT id,question,reputation ' \
+                'FROM questions ' \
+                'WHERE id != %d ' % id
+        self.cursor.execute(request)
+        return self.cursor.fetchall()
+
+    def getQuestionsByWord(self,id, question):
+        request='SELECT id,question,reputation ' \
+                'FROM questions ' \
+                'WHERE question LIKE ? AND id!=? '
+        data = ('%{}%'.format(question), str(id))
+        self.cursor.execute(request, data)
         return self.cursor.fetchall()
 
     def updateUserQuestion(self,user_id,question_id,text):
@@ -65,6 +80,23 @@ class DataBase:
         self.conn.commit()
         return result+1
 
+    def setRespondent(self,user_id, question_id):
+            request='SELECT id ' \
+                    'FROM respondents ' \
+                    'ORDER BY id DESC ' \
+                    'LIMIT 1'
+            self.cursor.execute(request)
+            result = self.cursor.fetchall()
+            if len(result) > 0:
+                result = result[0][0]
+            else:
+                result = 0
+
+            request='INSERT INTO respondents (user_id, question_id, id) ' \
+                    'VALUES (%d, %d, %d)' % (user_id, question_id, result+1)
+            self.cursor.execute(request)
+            self.conn.commit()
+            return result + 1
 
     def updateQuestionReputation(self,reputation,question_id,user_id):
         request = 'SELECT id ' \
