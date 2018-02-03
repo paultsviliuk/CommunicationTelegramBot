@@ -1,6 +1,6 @@
-from TelegramBot.botCore import Telegram_API as API
-from TelegramBot.botCore import question_module as qs,profile_module as pr, about_module as ab, answer_module as an
-from TelegramBot.botCore import database_module as ORM
+from botCore import Telegram_API as API
+from botCore import question_module as qs,profile_module as pr, about_module as ab, answer_module as an
+from botCore import database_module as ORM
 
 
 def executeCommands(db,text, user):
@@ -10,13 +10,13 @@ def executeCommands(db,text, user):
     if text == 'Задать вопрос':
         qs.questionMethod(user=user)
         return
-    if text[0] == '?' and text[-1] == '?' and text.find('id=') >= 0:
+    if text[0] == '?' and text.find('id=') >= 0:
         text = text.split(',')
         question = text[0][1:]
         id = text[1][3:-1]
         qs.changeQuestion(db=db,id=id, text=question, user=user)
         return
-    if text[0] == '?' and text[-1] == '?':
+    if text[0] == '?':
         qs.confirmQuestion(db=db,text=text, user=user)
         return
     if text[0] == '&':
@@ -28,7 +28,7 @@ def executeCommands(db,text, user):
     if text == 'нет':
         qs.questionMessage(user=user)
         return
-    if text.find('!r=') >= 0 and text.find(',id=') >= 0 and text[-1] == '!':
+    if text.find('!r=') >= 0 and text.find(',id=') >= 0:
         text = text.split(',')
         reputation = int(text[0][3:])
         id = text[1][3:][:-1]
@@ -66,6 +66,12 @@ def executeCommands(db,text, user):
         id = text[11:]
         pr.changeQuestionMessage(id=id, user=user)
         return
+    if text == 'Список отвечающих':
+        pr.getRespondentsList(db=db,user=user)
+        return
+    if text.find('mark='):
+
+        return
 
 def startMethod(db,user):
     id=user['id']
@@ -98,3 +104,6 @@ def runBot():
         offset=int(offset)
         offset += 1
 runBot()
+
+
+

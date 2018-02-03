@@ -1,12 +1,20 @@
 import sqlite3
+import MySQLdb
+
 
 class DataBase:
 
+    user='admin'
+    host='localhost'
+    passw='1qaz2wsx3edc4rfv'
+    charset = 'cp1251'
+    db='bot'
     cursos=None
     con=None
 
     def connect(self):
-        self.conn = sqlite3.connect('/Users/Ayma Loud/Desktop/tgbot/TelegramBot/db.sqlite3')
+        #self.conn = sqlite3.connect('/home/alexey/PycharmProjects/TelegramBot/db.sqlite3')
+        self.conn = MySQLdb.connect(host=self.host,user=self.user,password=self.passw,db=self.db,charset=self.charset)
         self.cursor = self.conn.cursor()
 
     def getUser(self,id):
@@ -122,6 +130,17 @@ class DataBase:
         else:
             return False
 
+    def getRespondetnsList(self,user_id):
+        request='SELECT questions.question, users.name,questions.reputation, respondents.id ' \
+                'FROM respondents LEFT JOIN users ON respondents.user_id=users.id ' \
+                'LEFT JOIN questions ON questions.id=respondents.question_id ' \
+                'WHERE questions.user_id=%d' %(user_id)
+        self.cursor.execute(request)
+        result=self.cursor.fetchall()
+        return result
+
 
     def close(self):
         self.conn.close()
+
+

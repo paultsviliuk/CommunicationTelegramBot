@@ -1,4 +1,4 @@
-from TelegramBot.botCore import Telegram_API as API
+from botCore import Telegram_API as API
 
 def shareVk(user):
     id = user['id']

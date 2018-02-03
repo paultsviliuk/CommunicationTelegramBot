@@ -1,4 +1,4 @@
-from TelegramBot.botCore import Telegram_API as API
+from botCore import Telegram_API as API
 
 
 def changeQuestion(db,id,text,user):
@@ -12,7 +12,8 @@ def changeQuestion(db,id,text,user):
 
 
 def questionMethod(user):
-    message = 'Введите ваш вопрос таким образом.\n?[ваш вопрос]?'
+    message = 'Введите ваш вопрос таким образом.\n?[ваш вопрос]' \
+              '\n Например : ? как дела?'
     API.sendMessage(user=user, message=message)
 
 def confirmQuestion(db,text,user):
@@ -57,5 +58,6 @@ def confirmUsingReputation(db,id,user):
     message = 'количество доступной репутации : '+str(reputation)+'\n'+\
         'Id вопроса : '+str(id)+'\n'+\
         'Введите количество репутации для вопроса и id вопроса в таком формате. \n' \
-        ' !r=[количество репутации],id=[id вопроса]!'
+        ' !r=[количество репутации],id=[id вопроса]' \
+        '\n Например : !r=5,id=15'
     API.sendMessage(user=user, message=message)

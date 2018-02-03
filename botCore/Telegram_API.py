@@ -1,4 +1,4 @@
-from TelegramBot.TelegramBot import settings
+from TelegramBot import settings
 import requests,json
 
 TELEGRAM_BOT_TOKEN='491379466:AAGuk7_XH2sMZRpaiAYxw1jyE-xO81VBXsY'

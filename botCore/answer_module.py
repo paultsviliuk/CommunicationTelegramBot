@@ -1,5 +1,5 @@
-from TelegramBot.botCore import Telegram_API as API
-from TelegramBot.botCore import database_module as ORM
+from botCore import Telegram_API as API
+
 
 def answerStartMethod(user):
     message="Выберите пункт."
@@ -27,7 +27,8 @@ def answerMethod(db, user):
         API.sendMessage(user=user, message=message, reply_markup=keyboard)
 
 def findQuestion(user):
-    message = 'Введите ваш запрос таким образом.\n&Вопрос или его часть'
+    message = 'Введите ваш запрос таким образом.\n&[Вопрос или его часть]' \
+              '\n Например : &как дела?'
     API.sendMessage(user=user, message=message)
 
 def questionList(db,text,user):
