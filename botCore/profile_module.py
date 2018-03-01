@@ -7,8 +7,9 @@ def getQuestionList(db,user):
         message += '\nРепутация вопроса : ' + str(q[2])
         keyboard={
         'inline_keyboard': [
-            [{'text':'Редактировать вопрос', 'callback_data': 'qchange, id='+str(q[0])}],
-            [{'text': 'Изменить репутацию', 'callback_data': 'repchange, id='+str(q[0])}]
+            [{'text':'Редактировать вопрос', 'callback_data': 'qchange, id='+str(q[0])},
+             {'text': 'Изменить репутацию', 'callback_data': 'repchange, id=' + str(q[0])}
+             ],
         ],
         'one_time_keyboard': True
         }
@@ -21,20 +22,25 @@ def getRespondentsList(db,user):
         message = 'Вопрос : ' + r[0]
         message += '\nИмя ответчика : ' + r[1]
         message += '\nРепутация вопроса : ' + str(r[2])
-        message += '\nПоставить балы отвечающему'
+        message += '\nОтветил ли он на ваш вопрос ?'
         keyboard1={
             'inline_keyboard':[
-                [{'text': '1', 'callback_data': 'mark=1'},
-                 {'text': '2', 'callback_data': 'mark=2'},
-                 {'text': '3', 'callback_data': 'mark=3'},
-                 {'text': '4', 'callback_data': 'mark=4'},
-                 {'text': '5', 'callback_data': 'mark=5'}
+                [{'text': 'да', 'callback_data': 'mark=да,uid='+str(r[3])+',qid='+str(r[4])+',r='+str(r[2])}
                  ],
         ],
             'one_time_keyboard': True
         }
 
         API.sendMessage(user=user, message=message, reply_markup=keyboard1)
+
+def positiveAnswer(db,user,reputation,qid,rid):
+    db.deleteRespondentFromQuestion(question_id=int(qid), user_id=int(rid))
+    db.deleteQuestion(question_id=qid)
+    db.updateReputation(user_id=int(rid),reputation=int(reputation))
+    message = 'Ответчик вознагражден,вопрос удален из списка.'
+    API.sendMessage(user=user, message=message)
+
+
 
 def changeQuestionMessage(id,user):
     message = 'Id вопроса : '+str(id)+'\n' \

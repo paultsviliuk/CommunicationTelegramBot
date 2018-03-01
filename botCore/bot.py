@@ -69,9 +69,11 @@ def executeCommands(db,text, user):
     if text == 'Список отвечающих':
         pr.getRespondentsList(db=db,user=user)
         return
-    if text.find('mark='):
-
+    if text.find('mark')>=0:
+        text=text.split(',')
+        pr.positiveAnswer(db=db,user=user,rid=text[1][4:],qid=text[2][4:],reputation=text[3][2:])
         return
+
 
 def startMethod(db,user):
     id=user['id']

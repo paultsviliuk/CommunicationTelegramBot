@@ -1,4 +1,4 @@
-import sqlite3
+
 import MySQLdb
 
 
@@ -80,13 +80,45 @@ class DataBase:
                 'ORDER BY id DESC ' \
                 'LIMIT 1'
         self.cursor.execute(request)
-        result=self.cursor.fetchall()[0][0]
+        result=self.cursor.fetchall()
 
-        request='INSERT INTO questions (user_id,question,reputation,id) ' \
-                'VALUES (%d,"%s",%d,%d)' % (user_id,question,0,result+1)
+        if len(result)>0:
+
+            request='INSERT INTO questions (user_id,question,reputation,id) ' \
+                    'VALUES (%d,"%s",%d,%d)' % (user_id,question,0,result[0][0]+1)
+            self.cursor.execute(request)
+            self.conn.commit()
+            return result[0][0]+1
+        else:
+            request = 'INSERT INTO questions (user_id,question,reputation,id) ' \
+                     'VALUES (%d,"%s",%d,%d)' % (user_id, question, 0, 0)
+            self.cursor.execute(request)
+            self.conn.commit()
+            return 0
+
+    def deleteQuestion(self,question_id):
+        request='DELETE FROM questions ' \
+                'WHERE id='+question_id
         self.cursor.execute(request)
         self.conn.commit()
-        return result+1
+        return 0
+
+    def updateReputation(self,user_id,reputation):
+        request = 'UPDATE users ' \
+                  'SET reputation=reputation+%d ' \
+                  'WHERE id=%d' % (reputation, user_id)
+        self.cursor.execute(request)
+        self.conn.commit()
+        return 0
+
+    def deleteRespondentFromQuestion(self,user_id,question_id):
+        request = 'DELETE FROM respondents ' \
+                  'WHERE question_id=%d AND user_id=%d' % (question_id,user_id)
+        self.cursor.execute(request)
+        self.conn.commit()
+        return 0
+
+
 
     def setRespondent(self,user_id, question_id):
             request='SELECT id ' \
@@ -131,7 +163,7 @@ class DataBase:
             return False
 
     def getRespondetnsList(self,user_id):
-        request='SELECT questions.question, users.name,questions.reputation, respondents.id ' \
+        request='SELECT questions.question, users.name,questions.reputation, respondents.id, questions.id ' \
                 'FROM respondents LEFT JOIN users ON respondents.user_id=users.id ' \
                 'LEFT JOIN questions ON questions.id=respondents.question_id ' \
                 'WHERE questions.user_id=%d' %(user_id)
